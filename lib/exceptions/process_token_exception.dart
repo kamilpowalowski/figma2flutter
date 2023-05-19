@@ -3,4 +3,9 @@ class ProcessTokenException {
   final Object originalException;
 
   ProcessTokenException(this.message, this.originalException);
+
+  @override
+  String toString() {
+    return 'ProcessTokenException{message: $message}, originalException: $originalException';
+  }
 }

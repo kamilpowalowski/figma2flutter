@@ -39,7 +39,7 @@ class TokenTheme {
     try {
       return token.resolveAllReferences(tokens);
     } catch (e) {
-      throw ResolveTokenException(key);
+      throw ResolveTokenException('For:$key', e);
     }
   }
 

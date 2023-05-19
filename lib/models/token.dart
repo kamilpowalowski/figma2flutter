@@ -108,6 +108,7 @@ class Token {
         if (reference == null) {
           throw ResolveTokenException(
             'Reference not found for `${token.valueByRef}`',
+            null,
           );
         }
 
@@ -125,6 +126,7 @@ class Token {
           if (reference == null) {
             throw ResolveTokenException(
               'Reference not found for `${match.group(1)}`',
+              null,
             );
           }
 
@@ -282,24 +284,26 @@ String _resolveColorValue(String initialValue, Map<String, Token> tokenMap) {
     if (reference == null) {
       throw ResolveTokenException(
         'Reference not found for `${match.group(1)}`',
+        null,
       );
     }
+
+    String replaceWith = '';
 
     final color = ColorValue.maybeParse(reference.value);
-    if (color == null) {
-      throw ResolveTokenException(
-        'Could not parse color for `${reference.value}`',
-      );
-    }
+    if (color != null) {
+      // Check if is inside a rgba() function
+      final isRgb = value
+          .substring(max(0, match.start - 7), match.start)
+          .contains('rgba(');
 
-    // Check if is inside a rgba() function
-    final isRgb =
-        value.substring(max(0, match.start - 7), match.start).contains('rgba(');
-    final String replaceWith;
-    if (isRgb) {
-      replaceWith = color.toRgb().join(', ');
+      if (isRgb) {
+        replaceWith = color.toRgb().join(', ');
+      } else {
+        replaceWith = color.toHex();
+      }
     } else {
-      replaceWith = color.toHex();
+      replaceWith = reference.value.toString();
     }
 
     value = value.replaceRange(
